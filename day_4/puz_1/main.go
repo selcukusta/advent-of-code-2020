@@ -19,7 +19,7 @@ func main() {
 		temp    = make(map[string]interface{})
 	)
 
-	onValidation := func() {
+	onValidated := func() {
 		if len(temp) == 7 {
 			valid++
 		}
@@ -28,7 +28,7 @@ func main() {
 	for _, line := range lines {
 		match := pattern.FindAllStringSubmatch(line, -1)
 		if line == "" {
-			onValidation()
+			onValidated()
 			temp = make(map[string]interface{})
 		}
 		for i := range match {
@@ -38,6 +38,6 @@ func main() {
 			temp[match[i][1]] = match[i][2]
 		}
 	}
-	onValidation()
+	onValidated()
 	fmt.Println(valid)
 }

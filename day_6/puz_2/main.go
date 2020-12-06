@@ -18,7 +18,7 @@ func main() {
 		answers            = make(map[string]int)
 	)
 
-	calculate := func(answers map[string]int, personCount int) {
+	onCalculated := func(answers map[string]int, personCount int) {
 		for _, y := range answers {
 			if y == personCount {
 				total++
@@ -33,7 +33,7 @@ func main() {
 
 	for _, line := range lines {
 		if line == "" {
-			calculate(answers, personCountByGroup)
+			onCalculated(answers, personCountByGroup)
 			reset()
 		} else {
 			personCountByGroup++
@@ -47,6 +47,6 @@ func main() {
 			}
 		}
 	}
-	calculate(answers, personCountByGroup)
+	onCalculated(answers, personCountByGroup)
 	fmt.Println(total)
 }
