@@ -14,7 +14,7 @@ func Contains(slice []int64, val int64) int {
 
 //GetMinAndMaxValuesFromSlice gets the minimum and maximum values from the specified slice.
 func GetMinAndMaxValuesFromSlice(array []int64) (int64, int64, error) {
-	if array == nil || len(array) == 0 {
+	if len(array) == 0 {
 		return -1, -1, errors.New("Array is invalid")
 	}
 	var (
