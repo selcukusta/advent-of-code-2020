@@ -1,15 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"os"
 	"reflect"
 	"regexp"
-	"strconv"
 	"strings"
 
+	l "github.com/selcukusta/adventfocode/lib"
 	"gopkg.in/validator.v2"
 )
 
@@ -23,50 +21,6 @@ type passport struct {
 	PassportID     string `validate:"nonzero,regexp=^[0-9]{9}$"`
 }
 
-// Read is using to read a whole file into memory and return a slice.
-func Read(path string) ([]string, bool) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, false
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines, true
-}
-
-func validRange(val string, min int, max int) bool {
-	numericValue, err := strconv.Atoi(val)
-	if err != nil || !(numericValue >= min && numericValue <= max) {
-		return false
-	}
-	return true
-}
-
-func getStringOrDefault(model map[string]interface{}, key string) string {
-	val, ok := model[key]
-	if ok {
-		return val.(string)
-	}
-	return ""
-}
-
-func getIntOrDefault(model map[string]interface{}, key string) int {
-	val, ok := model[key]
-	if ok {
-		conv, err := strconv.Atoi(val.(string))
-		if err != nil {
-			return 0
-		}
-		return conv
-	}
-	return 0
-}
-
 func heightValidator(v interface{}, param string) error {
 	st := reflect.ValueOf(v)
 	if st.Kind() != reflect.String {
@@ -78,11 +32,11 @@ func heightValidator(v interface{}, param string) error {
 		return errors.New("Undefined unit")
 	}
 
-	if strings.HasSuffix(val, "cm") && !validRange(strings.TrimSuffix(val, "cm"), 150, 193) {
+	if strings.HasSuffix(val, "cm") && !l.ValidRange(strings.TrimSuffix(val, "cm"), 150, 193) {
 		return errors.New("Invalid range for cm")
 	}
 
-	if strings.HasSuffix(val, "in") && !validRange(strings.TrimSuffix(val, "in"), 59, 76) {
+	if strings.HasSuffix(val, "in") && !l.ValidRange(strings.TrimSuffix(val, "in"), 59, 76) {
 		return errors.New("Invalid range for in")
 	}
 
@@ -90,8 +44,12 @@ func heightValidator(v interface{}, param string) error {
 }
 
 func main() {
-	validator.SetValidationFunc("height", heightValidator)
-	lines, ok := Read("input.txt")
+	err := validator.SetValidationFunc("height", heightValidator)
+	if err != nil {
+		panic("stop")
+	}
+
+	lines, ok := l.Read("input.txt")
 	if !ok {
 		panic("stop")
 	}
@@ -103,36 +61,33 @@ func main() {
 		temp         = make(map[string]interface{})
 	)
 
-	for idx, line := range lines {
+	for _, line := range lines {
 		match := modelPattern.FindAllStringSubmatch(line, -1)
+		if line == "" {
+			passports = append(passports, temp)
+			temp = make(map[string]interface{})
+		}
 		for i := range match {
 			if match[i][1] == "cid" {
 				continue
 			}
 			temp[match[i][1]] = match[i][2]
 		}
-		if line == "" || idx+1 == len(lines) {
-			passports = append(passports, temp)
-			temp = make(map[string]interface{})
-		}
 	}
+	passports = append(passports, temp)
 
 	for _, v := range passports {
-		p := &passport{
-			BirthYear:      getIntOrDefault(v, "byr"),
-			IssueYear:      getIntOrDefault(v, "iyr"),
-			ExpirationYear: getIntOrDefault(v, "eyr"),
-			Height:         getStringOrDefault(v, "hgt"),
-			HairColor:      getStringOrDefault(v, "hcl"),
-			EyeColor:       getStringOrDefault(v, "ecl"),
-			PassportID:     getStringOrDefault(v, "pid"),
+		if validator.Validate(&passport{
+			BirthYear:      l.GetIntOrDefault(v, "byr"),
+			IssueYear:      l.GetIntOrDefault(v, "iyr"),
+			ExpirationYear: l.GetIntOrDefault(v, "eyr"),
+			Height:         l.GetStringOrDefault(v, "hgt"),
+			HairColor:      l.GetStringOrDefault(v, "hcl"),
+			EyeColor:       l.GetStringOrDefault(v, "ecl"),
+			PassportID:     l.GetStringOrDefault(v, "pid"),
+		}) == nil {
+			valid++
 		}
-
-		err := validator.Validate(p)
-		if err != nil {
-			continue
-		}
-		valid++
 	}
 	fmt.Println(valid)
 }

@@ -1,36 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
 
+	l "github.com/selcukusta/adventfocode/lib"
 	"gonum.org/v1/gonum/stat/combin"
 )
 
-// Read is using to read a whole file into memory and return a slice.
-func Read(path string) ([]int, bool) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, false
-	}
-	defer file.Close()
-
-	var lines []int
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		val, err := strconv.Atoi(scanner.Text())
-		if err == nil {
-			lines = append(lines, val)
-
-		}
-	}
-	return lines, true
-}
-
 func main() {
-	lines, ok := Read("input.txt")
+	lines, ok := l.ReadAsInt("input.txt")
 	if !ok {
 		panic("stop")
 	}

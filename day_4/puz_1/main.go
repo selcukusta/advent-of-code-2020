@@ -1,30 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"regexp"
+
+	l "github.com/selcukusta/adventfocode/lib"
 )
 
-// Read is using to read a whole file into memory and return a slice.
-func Read(path string) ([]string, bool) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, false
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines, true
-}
-
 func main() {
-	lines, ok := Read("input.txt")
+	lines, ok := l.Read("input.txt")
 	if !ok {
 		panic("stop")
 	}
@@ -35,20 +19,25 @@ func main() {
 		temp    = make(map[string]interface{})
 	)
 
-	for idx, line := range lines {
+	onValidation := func() {
+		if len(temp) == 7 {
+			valid++
+		}
+	}
+
+	for _, line := range lines {
 		match := pattern.FindAllStringSubmatch(line, -1)
+		if line == "" {
+			onValidation()
+			temp = make(map[string]interface{})
+		}
 		for i := range match {
 			if match[i][1] == "cid" {
 				continue
 			}
 			temp[match[i][1]] = match[i][2]
 		}
-		if line == "" || idx+1 == len(lines) {
-			if len(temp) == 7 {
-				valid++
-			}
-			temp = make(map[string]interface{})
-		}
 	}
+	onValidation()
 	fmt.Println(valid)
 }
