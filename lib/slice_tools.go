@@ -12,6 +12,16 @@ func Contains(slice []int64, val int64) int {
 	return -1
 }
 
+//ContainsInt looks the item exits in the given slice and return the specific index. If it's not found, it returns -1.
+func ContainsInt(slice []int, val int) int {
+	for i, v := range slice {
+		if v == val {
+			return i
+		}
+	}
+	return -1
+}
+
 //ContainsStr looks the item exits in the given slice and return the specific index. If it's not found, it returns -1.
 func ContainsStr(slice []string, val string) int {
 	for i, v := range slice {
