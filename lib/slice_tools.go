@@ -1,31 +1,20 @@
 package lib
 
-import "errors"
+import (
+	"errors"
+	"reflect"
+)
 
 //Contains looks the item exits in the given slice and return the specific index. If it's not found, it returns -1.
-func Contains(slice []int64, val int64) int {
-	for i, v := range slice {
-		if v == val {
-			return i
-		}
-	}
-	return -1
-}
+func Contains(slice, elem interface{}) int {
 
-//ContainsInt looks the item exits in the given slice and return the specific index. If it's not found, it returns -1.
-func ContainsInt(slice []int, val int) int {
-	for i, v := range slice {
-		if v == val {
-			return i
-		}
+	vOf := reflect.ValueOf(slice)
+	if vOf.Kind() != reflect.Slice && vOf.Kind() != reflect.Array {
+		return -1
 	}
-	return -1
-}
 
-//ContainsStr looks the item exits in the given slice and return the specific index. If it's not found, it returns -1.
-func ContainsStr(slice []string, val string) int {
-	for i, v := range slice {
-		if v == val {
+	for i := 0; i < vOf.Len(); i++ {
+		if elem == vOf.Index(i).Interface() {
 			return i
 		}
 	}

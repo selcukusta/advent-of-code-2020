@@ -18,7 +18,7 @@ var (
 
 func search(dict map[string]string, val string) {
 	for k, v := range dict {
-		if l.ContainsStr(checked, k) == -1 && strings.Contains(v, val) {
+		if l.Contains(checked, k) == -1 && strings.Contains(v, val) {
 			checked = append(checked, k)
 			valid++
 			search(dict, k)
