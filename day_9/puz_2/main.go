@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	l "github.com/selcukusta/adventfocode/lib"
-	"gonum.org/v1/gonum/stat/combin"
 )
 
 func main() {
@@ -14,27 +13,36 @@ func main() {
 	}
 
 	var (
-		result = 0
-		limit  = 25
+		sum     = 0
+		visited = make([]int, 0)
+		found   = false
+		// goal    = 127 //puz_1 sample result
+		goal = 217430975 //puz_1 actual result
 	)
 
-	for i := limit; i < len(lines); i++ {
-		var (
-			previous = lines[i-limit : i]
-			c        = combin.Combinations(len(previous), 2)
-			sum      = make([]int, 0)
-		)
-
-		for _, x := range c {
-			sum = append(sum, previous[x[0]]+previous[x[1]])
+	for i := range lines {
+		for idx := i + 1; idx < len(lines); idx++ {
+			next := lines[idx]
+			sum += next
+			visited = append(visited, next)
+			if sum == goal {
+				found = true
+				break
+			} else if sum > goal {
+				sum = 0
+				visited = make([]int, 0)
+				break
+			}
 		}
-
-		current := lines[i]
-		if l.Contains(sum, current) == -1 {
-			result = current
+		if found {
 			break
 		}
+
+	}
+	min, max, err := l.GetIntMinAndMaxValuesFromSlice(visited)
+	if err != nil {
+		panic("stop")
 	}
 
-	fmt.Println(result)
+	fmt.Println(min + max)
 }

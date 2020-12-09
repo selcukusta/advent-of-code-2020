@@ -21,14 +21,34 @@ func Contains(slice, elem interface{}) int {
 	return -1
 }
 
-//GetMinAndMaxValuesFromSlice gets the minimum and maximum values from the specified slice.
-func GetMinAndMaxValuesFromSlice(array []int64) (int64, int64, error) {
+//GetInt64MinAndMaxValuesFromSlice gets the minimum and maximum values from the specified slice.
+func GetInt64MinAndMaxValuesFromSlice(array []int64) (int64, int64, error) {
 	if len(array) == 0 {
 		return -1, -1, errors.New("Array is invalid")
 	}
 	var (
 		max int64 = array[0]
 		min int64 = array[0]
+	)
+	for _, value := range array {
+		if max < value {
+			max = value
+		}
+		if min > value {
+			min = value
+		}
+	}
+	return min, max, nil
+}
+
+//GetIntMinAndMaxValuesFromSlice gets the minimum and maximum values from the specified slice.
+func GetIntMinAndMaxValuesFromSlice(array []int) (int, int, error) {
+	if len(array) == 0 {
+		return -1, -1, errors.New("Array is invalid")
+	}
+	var (
+		max int = array[0]
+		min int = array[0]
 	)
 	for _, value := range array {
 		if max < value {
